@@ -8,7 +8,7 @@ clean::
 $(EXT_XML): $(EXT_XML_IN) $(GIT_HEAD)
 	$(call expandMacros)
 
-$(ANE): $(EXT_XML) $(ANE_SWC) $(ANE_SWF) $(if $(IOS_XML),$(IOS_XML) $(ANE_IOS_LIB)) $(ANE_ANDROID_JAR) $(ANE_BUNDLED_LIBS) $(ANE_ANDROID_JAR_DEVICE_LIBS) $(ANE_IOS_RESOURCE_DIRS)
+$(ANE): $(EXT_XML) $(ANE_SWC) $(ANE_SWF) $(if $(IOS_XML),$(IOS_XML) $(ANE_IOS_LIB)) $(ANE_ANDROID_JAR) $(ANE_BUNDLED_LIBS) $(ANE_ANDROID_JAR_DEVICE_LIBS) $(ANE_IOS_RESOURCE_DIRS) $(ANE_ANDROID_RESOURCE_DIRS)
 	$(call silent,ADT $@, \
 	adt -package -target ane $(ANE) $(EXT_XML) -swc $(ANE_SWC) \
     $(if $(IOS_XML), \
@@ -19,7 +19,8 @@ $(ANE): $(EXT_XML) $(ANE_SWC) $(ANE_SWF) $(if $(IOS_XML),$(IOS_XML) $(ANE_IOS_LI
       $(if $(ANE_ANDROID_JAR), \
       -platform Android-ARM $(ANE_ANDROID_JAR) $(ANE_SWF) \
           $(foreach d,$(ANE_ANDROID_JAR_SOURCES), \
-              $(if $(wildcard $d/res),-C $d res) $(if $(wildcard $d/libs),-C $d libs))) \
+              $(if $(wildcard $d/res),-C $d res)) \
+          $(foreach d, $(ANE_ANDROID_RESOURCE_DIRS),-C $(dir $d) $(notdir $d))) \
       -platform default $(ANE_SWF))
 	$(if $(ANE_BUNDLED_LIBS), \
 	  $(call silent,MERGE $@, \
